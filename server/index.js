@@ -18,11 +18,15 @@ app.use(
     credentials: true,
   })
 );
-
+const __dirname = path.resolve();
 // api ayengi idhr
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/user", messageRoute);
+app.use(express.static(path.join(__dirname, "/client/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
+});
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
