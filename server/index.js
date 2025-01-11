@@ -6,6 +6,7 @@ import { connectDB } from "./config/db.js";
 import userRoute from "./routes/auth.route.js";
 import postRoute from "./routes/post.route.js";
 import messageRoute from "./routes/message.route.js";
+import path from "path";
 const app = express();
 app.use(express.json());
 app.use(cookieparser()); // parses cookies attach attch to client request conver cookie parse data inta js object
