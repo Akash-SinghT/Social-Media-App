@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import SuggestedUsers from "./SuggestedUsers";
 
 const RightSidebar = () => {
   const { user } = useSelector((store) => store.auth);
@@ -26,6 +27,7 @@ const RightSidebar = () => {
           </span>
         </div>
       </div>
+      <SuggestedUsers />
     </div>
   );
 };
