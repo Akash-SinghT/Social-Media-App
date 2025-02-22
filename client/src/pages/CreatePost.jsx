@@ -43,7 +43,7 @@ const CreatePost = ({ open, setOpen }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:8000/api/v1/post/addpost",
+        "https://social-media-app-x1z2.onrender.com/api/v1/post/addpost",
         formData,
         {
           headers: {

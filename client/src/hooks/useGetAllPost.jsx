@@ -11,7 +11,7 @@ const useGetAllPost = () => {
       // will render at home page
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/v1/post/allpost",
+          "https://social-media-app-x1z2.onrender.com/api/v1/post/allpost",
           {
             withCredentials: true,
           }

@@ -22,7 +22,7 @@ app.use(cookieParser()); // Parse cookies
 // ✅ CORS Configuration
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.URL,
     credentials: true,
   })
 );

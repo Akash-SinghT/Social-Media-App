@@ -49,7 +49,7 @@ const EditProfile = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "http://localhost:8000/api/v1/user/profile/editprofile",
+        "https://social-media-app-x1z2.onrender.com/api/v1/user/profile/editprofile",
         formData,
         {
           headers: {

@@ -22,7 +22,7 @@ const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     if (user) {
-      const socketio = io("http://localhost:8000", {
+      const socketio = io("https://social-media-app-x1z2.onrender.com/", {
         query: {
           userId: user?._id, // provided user id to backend
         },
