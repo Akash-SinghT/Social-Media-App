@@ -5,42 +5,61 @@ import { generateToken } from "../utils/generateToken.js";
 import getDatauri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
 import { Post } from "../models/post.model.js";
-
 export const signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
-      return res.status(401).json({
-        message: "All fields required",
+      return res.status(400).json({
+        message: "All fields are required",
         success: false,
       });
     }
-    const user = await User.findOne({ email });
+
+    let user = await User.findOne({ email });
     if (user) {
-      return res.status(401).json({
-        message: "email already exist",
+      return res.status(400).json({
+        message: "Email already exists",
         success: false,
       });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
+    user = await User.create({
       username,
       email,
       password: hashedPassword,
     });
 
-    return res.status(200).json({
-      message: "Account created successfully",
+    // ✅ Generate Token
+    generateToken(user._id, res);
+
+    // ✅ Retrieve User Posts (Initially, new users have no posts)
+    const userPosts = [];
+
+    // ✅ Format User Response
+    user = {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      profilePicture: user.profilePicture || "",
+      bio: user.bio || "",
+      followers: [],
+      following: [],
+      posts: userPosts,
+    };
+
+    return res.status(201).json({
       success: true,
-      newUser,
+      message: "Account created successfully",
+      user,
     });
   } catch (error) {
-    console.log("Error in sign up", error);
-    return res.status(401).json({
+    console.log("Error in sign up:", error);
+    return res.status(500).json({
       message: "Internal Server Error",
+      success: false,
     });
   }
 };
@@ -133,7 +152,12 @@ export const getProfile = async (req, res) => {
   // we will get anyone's profile by its's local id
   try {
     const userId = req.params.id; // get user id
-    let user = await User.findById(userId).select("-password"); //find user and return user
+    let user = await User.findById(userId)
+      .populate({
+        path: "posts",
+        createdAt: -1,
+      })
+      .populate("bookmarks"); //find user and return user
     return res.status(200).json({
       user,
       success: true,

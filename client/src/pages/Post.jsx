@@ -19,6 +19,10 @@ const Post = ({ post }) => {
   const dispatch = useDispatch();
   const [postLike, setPostLike] = useState(post.likes.length); // initial like count
   const [comment, setComment] = useState(post.comments); // thre is comment array inside post
+  // Bookmark state management
+  const [isBookmarked, setIsBookmarked] = useState(
+    user?.bookmarks?.includes(post._id)
+  );
 
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
@@ -33,7 +37,7 @@ const Post = ({ post }) => {
     try {
       const action = liked ? "dislike" : "like";
       const response = await axios.get(
-        `http://localhost:8000/api/v1/post/${post?._id}/${action}`,
+        `https://social-media-app-8too.onrender.com/api/v1/post/${post?._id}/${action}`,
         {
           withCredentials: true,
         }
@@ -66,7 +70,7 @@ const Post = ({ post }) => {
   const commentHandler = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/v1/post/${post._id}/comment`,
+        `https://social-media-app-8too.onrender.com/api/v1/post/${post._id}/comment`,
         { text },
         {
           headers: {
@@ -90,13 +94,14 @@ const Post = ({ post }) => {
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.response?.data?.message || "Bookmark action failed");
     }
   };
 
   const deletePostHandler = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:8000/api/v1/post/deletepost/${post?._id}`,
+        `https://social-media-app-8too.onrender.com/api/v1/post/deletepost/${post?._id}`,
         {
           withCredentials: true,
         }
@@ -113,6 +118,28 @@ const Post = ({ post }) => {
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
+    }
+  };
+  const bookmarkHandler = async () => {
+    try {
+      const res = await axios.get(
+        `https://social-media-app-8too.onrender.com/api/v1/post/${post?._id}/bookmark`,
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        setIsBookmarked((prev) => !prev); // Toggle state
+        toast.success(res.data.message);
+
+        // Update Redux store
+        const updatedPosts = posts.map((p) =>
+          p._id === post._id ? { ...p, isBookmarked: !isBookmarked } : p
+        );
+        dispatch(setPosts(updatedPosts));
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Bookmark action failed");
     }
   };
 
@@ -138,16 +165,18 @@ const Post = ({ post }) => {
             </button>
           </DialogTrigger>
           <DialogContent className="flex flex-col items-center gap-2 text-sm text-center bg-gray-800 p-4 rounded-md">
-            <Button
-              variant="ghost"
-              className="cursor-pointer w-fit text-[#ED4956] font-bold"
-            >
-              Unfollow
-            </Button>
+            {post?.author?._id !== user?._id && (
+              <Button
+                variant="ghost"
+                className="cursor-pointer w-fit text-[#ED4956] font-bold"
+              >
+                Unfollow
+              </Button>
+            )}
             <Button variant="ghost" className="cursor-pointer w-fit">
               Add to Favourites
             </Button>
-            {user && user?._id === post?.author._id && (
+            {user && user?._id === post.author?._id && (
               <Button
                 onClick={deletePostHandler}
                 variant="ghost"
@@ -194,12 +223,12 @@ const Post = ({ post }) => {
 
           <Send className="cursor-pointer hover:text-gray-600 transition-colors" />
         </div>
-        <button
-          aria-label="Bookmark"
-          className="cursor-pointer hover:text-gray-600 transition-colors"
-        >
-          <Bookmark />
-        </button>
+        <Bookmark
+          onClick={bookmarkHandler}
+          className={`cursor-pointer transition-colors stroke-white ${
+            isBookmarked ? "fill-white text-white" : "text-gray-600"
+          }`}
+        />
       </div>
 
       {/* Post Details */}

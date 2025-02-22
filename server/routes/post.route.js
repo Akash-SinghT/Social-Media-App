@@ -24,5 +24,5 @@ router.get("/:id/dislike", isAuthenticated, dislikePost);
 router.post("/:id/comment", isAuthenticated, addComment);
 router.post("/:id/comment/allcomment", isAuthenticated, getCommentsOfPost);
 router.delete("/deletepost/:id", isAuthenticated, deletePost);
-router.post("/:id/bookmark", isAuthenticated, bookmarkPost);
+router.get("/:id/bookmark", isAuthenticated, bookmarkPost);
 export default router;

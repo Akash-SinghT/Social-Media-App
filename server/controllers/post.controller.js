@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { Comment } from "../models/comment.model.js";
 import multer from "multer";
 import cloudinary from "cloudinary";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 export const addNewPost = async (req, res) => {
   try {
     const { caption } = req.body;
@@ -118,6 +119,26 @@ export const likePost = async (req, res) => {
     await post.updateOne({ $addToSet: { likes: likeKrneWalaUserKiId } }); // post me jake  likes array me  ek add kr do
     await post.save();
     // Implement socket io for real time notification
+    const user = await User.findById(likeKrneWalaUserKiId).select(
+      // find id of user who liked
+      "username profilePicture"
+    );
+
+    const postOwnerId = post.author.toString(); // getting owner so i dont get notification of my own like
+    if (postOwnerId !== likeKrneWalaUserKiId) {
+      // emit a notification event
+      const notification = {
+        // sending info in notification
+        type: "like",
+        userId: likeKrneWalaUserKiId,
+        userDetails: user,
+        postId,
+        message: "Someone liked your post",
+      };
+      const postOwnerSocketId = getReceiverSocketId(postOwnerId); // getting postowner  socket id from server or socket map
+      io.to(postOwnerSocketId).emit("notification", notification); // emmit socket event ('name of event , data)
+    }
+
     return res.status(200).json({
       message: "Post liked",
       success: true,
@@ -145,6 +166,26 @@ export const dislikePost = async (req, res) => {
     await post.updateOne({ $pull: { likes: likeKrneWalaUserKiId } }); // post me jake  likes array me  ek kam kr do
     await post.save();
     // Implement socket io for real time notification
+    const user = await User.findById(likeKrneWalaUserKiId).select(
+      // find id of user who liked
+      "username profilePicture"
+    );
+
+    const postOwnerId = post.author.toString(); // getting owner so i dont get notification of my own like
+    if (postOwnerId !== likeKrneWalaUserKiId) {
+      // emit a notification event
+      const notification = {
+        // sending info in notification
+        type: "dislike", // handled in frontend removing like
+        userId: likeKrneWalaUserKiId,
+        userDetails: user,
+        postId,
+        message: "Someone liked your post",
+      };
+      const postOwnerSocketId = getReceiverSocketId(postOwnerId); // getting postowner  socket id from server or socket map
+      io.to(postOwnerSocketId).emit("notification", notification); // emmit socket event ('name of event , data)
+    }
+
     return res.status(200).json({
       message: "Post Unliked",
       success: true,
@@ -282,20 +323,19 @@ export const bookmarkPost = async (req, res) => {
       });
     } else {
       // if not bookmark it
-      if (user.bookmarks.includes(post._id)) {
-        await user.updateOne({ $addToSet: { bookmarks: post._id } }); //  add it to array
-        await user.save();
-        return res.status(200).json({
-          type: "Saved",
-          message: "Post removed from bookmarked",
-          success: true,
-        });
-      }
+
+      await user.updateOne({ $addToSet: { bookmarks: post._id } }); //  add it to array
+      await user.save();
+      return res.status(200).json({
+        type: "Saved",
+        message: "Post bookmarked",
+        success: true,
+      });
     }
   } catch (error) {
     console.log(error);
     return res
       .status(500)
-      .json({ message: "Internal server error", sucess: false });
+      .json({ message: "Internal server error", success: false });
   }
 };

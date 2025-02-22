@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "../components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthUser } from "@/redux/authSlice";
 
 const SignUp = () => {
   const [input, setInput] = useState({
@@ -13,6 +15,8 @@ const SignUp = () => {
     password: "",
   });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((store) => store.auth);
   const [isLoading, setIsLoadibg] = useState(false);
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -22,7 +26,7 @@ const SignUp = () => {
     setIsLoadibg(true);
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/v1/user/signup",
+        "https://social-media-app-8too.onrender.com/api/v1/user/signup",
         input,
         {
           headers: {
@@ -32,6 +36,7 @@ const SignUp = () => {
         }
       );
       if (res.data.success) {
+        dispatch(setAuthUser(res.data.user)); // Save user in Redux
         navigate("/");
         toast.success(res.data.message);
         setInput({
@@ -47,6 +52,11 @@ const SignUp = () => {
       setIsLoadibg(false);
     }
   };
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <div className="flex items-center justify-center p-4 w-screen h-screen sm:p-8">

@@ -1,34 +1,46 @@
 import express from "express";
 import cors from "cors";
-import cookieparser from "cookie-parser";
+import cookieParser from "cookie-parser"; // 🔥 Fix: Capital 'P' in 'cookieParser'
 import dotenv from "dotenv";
+import path from "path";
 import { connectDB } from "./config/db.js";
 import userRoute from "./routes/auth.route.js";
 import postRoute from "./routes/post.route.js";
 import messageRoute from "./routes/message.route.js";
-import path from "path";
-const app = express();
-app.use(express.json());
-app.use(cookieparser()); // parses cookies attach attch to client request conver cookie parse data inta js object
+import { app, server } from "./socket/socket.js"; // Getting express app from socket.js
+
+// ✅ Load environment variables first
 dotenv.config();
+
+// ✅ Connect to Database
 connectDB();
+
+// ✅ Middleware (Order Matters)
+app.use(express.json()); // Parse JSON requests
+app.use(cookieParser()); // Parse cookies
+
+// ✅ CORS Configuration
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.URL,
     credentials: true,
   })
 );
-const __dirname = path.resolve();
-// api ayengi idhr
+
+// ✅ Define API Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
-app.use("/api/v1/user", messageRoute);
+app.use("/api/v1/message", messageRoute);
+
+// ✅ Serve Frontend (Vite/React)
+const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, "/client/dist")));
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
 });
 
+// ✅ Start Server
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-  console.log(`Server Listen To ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`🔥 Server running on port ${PORT}`);
 });

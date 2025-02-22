@@ -19,7 +19,7 @@ router.get("/:id/profile", isAuthenticated, getProfile); // will get profile by 
 router.post(
   "/profile/editprofile",
   isAuthenticated,
-  upload.single("profilePicture"), // use multer middleware to up load image on cloud like single image
+  upload.single("profilePhoto"), // use multer middleware to up load image on cloud like single image
   editProfile
 );
 router.get("/suggested", isAuthenticated, getSuggestedUSers);

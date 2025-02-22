@@ -1,14 +1,15 @@
 import { Conversation } from "../models/conversation.model.js";
 import { Message } from "../models/message.model.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 export const sendMessage = async (req, res) => {
   try {
     const senderId = req.id; // logged in user
     const receiverId = req.params.id; // receiver id
-    const { message } = req.body;
+    const { textMessage: message } = req.body;
     let conversation = await Conversation.findOne({
       participants: { $all: [senderId, receiverId] }, // will check if any past conversation happend or not in participants array
-    });
+    }).populate("messages");
     // establish the conversation if not started yet
     if (!conversation) {
       conversation = await Conversation.create({
@@ -26,6 +27,10 @@ export const sendMessage = async (req, res) => {
     await Promise.all([conversation.save(), newMessage.save()]); // ek document ko multiple time handle krna hi to promise
 
     // implement socket io for real time data transfer
+    const receiverSocketId = getReceiverSocketId(receiverId); // socket id of receiver from server
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage); // creating a event that will listen on front end
+    }
 
     return res.status(201).json({
       success: true,

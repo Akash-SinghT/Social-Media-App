@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "../components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser } from "@/redux/authSlice";
 
 const Login = () => {
@@ -13,6 +13,7 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const [isLoading, setIsLoadibg] = useState(false);
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const Login = () => {
     setIsLoadibg(true);
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/v1/user/login",
+        "https://social-media-app-8too.onrender.com/api/v1/user/login",
         input,
         {
           headers: {
@@ -50,7 +51,11 @@ const Login = () => {
       setIsLoadibg(false);
     }
   };
-
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, []);
   return (
     <div className="flex items-center justify-center p-4 w-screen h-screen sm:p-8">
       <form
