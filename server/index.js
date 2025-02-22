@@ -22,7 +22,7 @@ app.use(cookieParser()); // Parse cookies
 // ✅ CORS Configuration
 app.use(
   cors({
-    origin: process.env.URL,
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
@@ -34,9 +34,9 @@ app.use("/api/v1/message", messageRoute);
 
 // ✅ Serve Frontend (Vite/React)
 const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, "/client/dist")));
+app.use(express.static(path.join(__dirname, "../client/dist")));
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
+  res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
 });
 
 // ✅ Start Server

@@ -20,7 +20,7 @@ const ChatPage = () => {
   const sendMessageHandler = async (receiverId) => {
     try {
       const res = await axios.post(
-        `https://social-media-app-8too.onrender.com/api/v1/message/sendmessage/${receiverId}`,
+        `http://localhost:8000/api/v1/message/sendmessage/${receiverId}`,
         { textMessage },
         {
           headers: {

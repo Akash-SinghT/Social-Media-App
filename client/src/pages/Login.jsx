@@ -25,7 +25,7 @@ const Login = () => {
     setIsLoadibg(true);
     try {
       const res = await axios.post(
-        "https://social-media-app-8too.onrender.com/api/v1/user/login",
+        "http://localhost:8000/api/v1/user/login",
         input,
         {
           headers: {

@@ -10,7 +10,7 @@ const io = new Server(server, {
   // new instance of server
   cors: {
     // need a parse a url so cors policy can be avoided
-    origin: process.env.URL, // origin
+    origin: "http://localhost:5173", // origin
     methods: ["GET", "POST"],
   },
 });

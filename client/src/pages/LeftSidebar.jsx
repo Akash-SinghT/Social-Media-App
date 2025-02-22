@@ -34,7 +34,7 @@ const LeftSidebar = () => {
   const logOutHandler = async () => {
     try {
       const response = await axios.get(
-        "https://social-media-app-8too.onrender.com/api/v1/user/logout",
+        "http://localhost:8000/api/v1/user/logout",
         {
           withCredentials: true,
         }

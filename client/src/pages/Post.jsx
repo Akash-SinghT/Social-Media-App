@@ -37,7 +37,7 @@ const Post = ({ post }) => {
     try {
       const action = liked ? "dislike" : "like";
       const response = await axios.get(
-        `https://social-media-app-8too.onrender.com/api/v1/post/${post?._id}/${action}`,
+        `http://localhost:8000/api/v1/post/${post?._id}/${action}`,
         {
           withCredentials: true,
         }
@@ -70,7 +70,7 @@ const Post = ({ post }) => {
   const commentHandler = async () => {
     try {
       const res = await axios.post(
-        `https://social-media-app-8too.onrender.com/api/v1/post/${post._id}/comment`,
+        `http://localhost:8000/api/v1/post/${post._id}/comment`,
         { text },
         {
           headers: {
@@ -101,7 +101,7 @@ const Post = ({ post }) => {
   const deletePostHandler = async () => {
     try {
       const response = await axios.delete(
-        `https://social-media-app-8too.onrender.com/api/v1/post/deletepost/${post?._id}`,
+        `http://localhost:8000/api/v1/post/deletepost/${post?._id}`,
         {
           withCredentials: true,
         }
@@ -123,7 +123,7 @@ const Post = ({ post }) => {
   const bookmarkHandler = async () => {
     try {
       const res = await axios.get(
-        `https://social-media-app-8too.onrender.com/api/v1/post/${post?._id}/bookmark`,
+        `http://localhost:8000/api/v1/post/${post?._id}/bookmark`,
         { withCredentials: true }
       );
 

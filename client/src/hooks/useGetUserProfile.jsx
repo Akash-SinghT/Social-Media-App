@@ -16,7 +16,7 @@ const useGetUserProfile = (userId) => {
       try {
         console.log("🔵 Fetching profile for userId:", userId);
         const res = await axios.get(
-          `https://social-media-app-8too.onrender.com/api/v1/user/${userId}/profile`,
+          `http://localhost:8000/api/v1/user/${userId}/profile`,
           { withCredentials: true }
         );
 
